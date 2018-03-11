@@ -30,6 +30,7 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:id="@+id/item_editview"
                 android:hint="Nome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -59,6 +60,7 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:id="@+id/price_editview"
                 android:hint="Preço"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -88,6 +90,7 @@
             android:layout_height="wrap_content">
 
             <EditText
+                android:id="@+id/quantity_editview"
                 android:hint="Quantidade"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

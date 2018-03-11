@@ -1,6 +1,10 @@
 package com.example.android.inventoryapp;
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,8 +13,18 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
-public class InventoryActivity extends AppCompatActivity {
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTENT_URI;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.PRICE_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.QUANTITY_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry._ID;
+
+public class InventoryActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    InventoryCursorAdapter inventoryCursorAdapter;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -18,6 +32,13 @@ public class InventoryActivity extends AppCompatActivity {
         setContentView(R.layout.activity_inventory);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        /* Find views on layout */
+        ListView inventoryList = findViewById(R.id.list);
+
+        /* Set Adapter */
+        inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
+        inventoryList.setAdapter(inventoryCursorAdapter);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener( ) {
@@ -27,6 +48,9 @@ public class InventoryActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        /* Start Loader */
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -49,5 +73,37 @@ public class InventoryActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    /*  find data on DB */
+    @Override
+    public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
+
+        String[] projection = {
+                _ID,
+                ITEM_COLUMN,
+                PRICE_COLUMN,
+                QUANTITY_COLUMN
+        };
+
+        return new CursorLoader(this,
+                CONTENT_URI,
+                projection,
+                null,
+                null,
+                null
+        );
+    }
+
+    /* Fill data from cursor to list */
+    @Override
+    public void onLoadFinished( Loader <Cursor> loader, Cursor data ) {
+        inventoryCursorAdapter.swapCursor(data);
+    }
+
+    /* When data is updated? */
+    @Override
+    public void onLoaderReset( Loader <Cursor> loader ) {
+        inventoryCursorAdapter.swapCursor(null);
     }
 }

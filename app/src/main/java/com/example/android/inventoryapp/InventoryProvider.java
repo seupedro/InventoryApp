@@ -109,13 +109,13 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("Item must have a name");
         }
 
-        /* Check if price is valid */
+        /* Check if priceEdit is valid */
         double price = values.getAsDouble(PRICE_COLUMN);
         if (price < 0){
             throw new IllegalArgumentException("Price must be valid");
         }
 
-        /* Check if quantity is valid */
+        /* Check if quantityEdit is valid */
         int quanity = values.getAsInteger(QUANTITY_COLUMN);
         if (quanity < 0 ){
             throw new IllegalArgumentException("Quantity must be valid");
@@ -186,14 +186,14 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-        /* Check if price is valid */
+        /* Check if priceEdit is valid */
         if (values.containsKey(PRICE_COLUMN)){
             if (values.getAsDouble(PRICE_COLUMN) < 0) {
                 throw new IllegalArgumentException("Price must be higher then or at least 0");
             }
         }
 
-        /* Check if quantity is valid */
+        /* Check if quantityEdit is valid */
         if (values.containsKey(QUANTITY_COLUMN) && values.getAsInteger(QUANTITY_COLUMN) < 0) {
             throw new IllegalArgumentException("Quantity must be higher then or at least 0");
         }

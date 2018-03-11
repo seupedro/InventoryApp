@@ -9,9 +9,9 @@
     tools:context="com.example.android.inventoryapp.InventoryActivity"
     tools:showIn="@layout/activity_inventory">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!" />
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </LinearLayout>

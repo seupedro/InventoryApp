@@ -1,7 +1,7 @@
 package com.example.android.inventoryapp;
 
-import android.content.ContentResolver;
 import android.net.Uri;
+import android.content.ContentResolver;
 import android.provider.BaseColumns;
 
 /**
@@ -32,8 +32,8 @@ public final class InventoryContract {
         /* Colunms Constants */
         public static final String _ID = BaseColumns._ID;
         public static final String ITEM_COLUMN = "item";
-        public static final String PRICE_COLUMN = "price";
-        public static final String QUANTITY_COLUMN = "quantity";
+        public static final String PRICE_COLUMN = "priceEdit";
+        public static final String QUANTITY_COLUMN = "quantityEdit";
 
         public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_URI, PATH_INVENTORY);
     }
