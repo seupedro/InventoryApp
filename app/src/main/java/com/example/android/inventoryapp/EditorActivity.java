@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
@@ -41,6 +42,16 @@ public class EditorActivity extends AppCompatActivity
     private EditText priceEdit;
     private EditText quantityEdit;
 
+    /* Track if changes was made on activity */
+    private boolean isChanged = false;
+    private View.OnTouchListener touchListener = new View.OnTouchListener( ) {
+        @Override
+        public boolean onTouch( View v, MotionEvent event ) {
+            isChanged = true;
+            return false;
+        }
+    };
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
@@ -51,6 +62,11 @@ public class EditorActivity extends AppCompatActivity
         priceEdit = findViewById(R.id.price_editview);
         quantityEdit = findViewById(R.id.quantity_editview);
 
+        /* Set Change Listeners on fields */
+        itemEdit.setOnTouchListener(touchListener);
+        priceEdit.setOnTouchListener(touchListener);
+        quantityEdit.setOnTouchListener(touchListener);
+
          /* Get URI from intent */
         currentItem = getIntent().getData();
 
@@ -60,12 +76,8 @@ public class EditorActivity extends AppCompatActivity
             getLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
         } else {
             setTitle("New Item");
-
         }
-
     }
-
-
 
     @Override
     public boolean onPrepareOptionsMenu( Menu menu ) {
@@ -75,6 +87,32 @@ public class EditorActivity extends AppCompatActivity
             menu.findItem(R.id.delete_buton_editor).setVisible(false);
         }
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!isChanged){
+            super.onBackPressed();
+            return;
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Changes was made. Do you want to discard it?");
+            builder.setPositiveButton("DISCARD", new DialogInterface.OnClickListener( ) {
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    finish();
+                }
+            });
+            builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener( ) {
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    if (dialog != null){
+                        dialog.dismiss();
+                    }
+                }
+            });
+            builder.create().show();
+        }
     }
 
     @Override
@@ -133,10 +171,17 @@ public class EditorActivity extends AppCompatActivity
         values.put(PRICE_COLUMN, priceEdit.getText().toString().trim());
         values.put(QUANTITY_COLUMN, quantityEdit.getText().toString().trim());
 
-        Uri newUri = getContentResolver().insert(CONTENT_URI, values);
+        /* If is a new Item, insert on db. Otherwise update current item */
+        if (currentItem == null){
+            Uri newUri = getContentResolver().insert(CONTENT_URI, values);
+            Toast.makeText(this, String.valueOf(newUri), Toast.LENGTH_SHORT).show();
+        } else {
+            int updatedRow = getContentResolver().update(currentItem, values, null, null);
+            Snackbar.make(findViewById(R.id.rootView), "Rows updated: " + updatedRow, Snackbar.LENGTH_SHORT).show();
+        }
+        /* Notify changes */
         getContentResolver().notifyChange(CONTENT_URI, null);
-
-        Toast.makeText(this, String.valueOf(newUri), Toast.LENGTH_SHORT).show();
+        /* Close activity */
         finish();
     }
 

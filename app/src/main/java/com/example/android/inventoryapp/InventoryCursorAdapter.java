@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
@@ -36,6 +37,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         TextView item_tv = view.findViewById(R.id.item_tv);
         TextView price_tv = view.findViewById(R.id.price_tv);
         TextView quantity_tv = view.findViewById(R.id.quatity_tv);
+        Button sellButton = view.findViewById(R.id.sell_button);
 
         /* Fill data from cursor on each textview */
         item_tv.setText(
@@ -49,5 +51,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         quantity_tv.setText(
                 cursor.getString(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN))
         );
+
+        sellButton.setText("Sold +1");
     }
 }

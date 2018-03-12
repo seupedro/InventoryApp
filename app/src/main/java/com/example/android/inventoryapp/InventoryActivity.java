@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -32,7 +33,6 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 public class InventoryActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    //TODO: Lista não está atualizando
     private static final String LOG_TAG = InventoryActivity.class.getSimpleName();
     /* Loader Constant ID */
     private static final int INVENTORY_LOADER_ID = 0;
@@ -50,7 +50,8 @@ public class InventoryActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         /* Find views on layout */
-        ListView inventoryList = findViewById(R.id.list);
+        final ListView inventoryList = findViewById(R.id.list);
+        Button sellButton = findViewById(R.id.sell_button);
 
         /* Set Adapter */
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
@@ -64,16 +65,21 @@ public class InventoryActivity extends AppCompatActivity
                 Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
                 intent.setData(currentItemUri);
                 startActivity(intent);
-//                startActivity(new Intent(InventoryActivity.this, EditorActivity.class)
-//                        .setData(Uri.withAppendedPath(CONTENT_URI, String.valueOf(id))));
             }
         });
 
+        /* Sell by one on Button */
+        sellButton.setOnClickListener(new View.OnClickListener( ) {
+            @Override
+            public void onClick( View v ) {
+                //TODO: Set up Sell Button
+            }
+        });
         /* Fab to make a intent to the editor/update activity */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener( ) {
             @Override
-            public void onClick( View view ) {
+            public void onClick( View v ) {
                 Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
                 startActivity(intent);
             }
