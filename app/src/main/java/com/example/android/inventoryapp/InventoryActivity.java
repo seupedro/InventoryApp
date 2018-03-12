@@ -2,20 +2,24 @@ package com.example.android.inventoryapp;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,10 +33,9 @@ public class InventoryActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
     //TODO: Lista não está atualizando
-
+    private static final String LOG_TAG = InventoryActivity.class.getSimpleName();
     /* Loader Constant ID */
     private static final int INVENTORY_LOADER_ID = 0;
-
     /* Loop control */
     private int i = 0;
 
@@ -52,6 +55,19 @@ public class InventoryActivity extends AppCompatActivity
         /* Set Adapter */
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
         inventoryList.setAdapter(inventoryCursorAdapter);
+
+        /* Set up a listener to edit an Item */
+        inventoryList.setOnItemClickListener(new AdapterView.OnItemClickListener( ) {
+            @Override
+            public void onItemClick( AdapterView <?> parent, View view, int position, long id ) {
+                Uri currentItemUri = ContentUris.withAppendedId(CONTENT_URI, id);
+                Intent intent = new Intent(InventoryActivity.this, EditorActivity.class);
+                intent.setData(currentItemUri);
+                startActivity(intent);
+//                startActivity(new Intent(InventoryActivity.this, EditorActivity.class)
+//                        .setData(Uri.withAppendedPath(CONTENT_URI, String.valueOf(id))));
+            }
+        });
 
         /* Fab to make a intent to the editor/update activity */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -89,9 +105,7 @@ public class InventoryActivity extends AppCompatActivity
             case R.id.delete_all:
                 deleteAllData();
                 return true;
-
         }
-
         return super.onOptionsItemSelected(item);
     }
 
