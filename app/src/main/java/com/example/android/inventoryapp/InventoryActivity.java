@@ -1,7 +1,10 @@
 package com.example.android.inventoryapp;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -14,6 +17,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTENT_URI;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
@@ -24,6 +28,15 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 public class InventoryActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    //TODO: Lista não está atualizando
+
+    /* Loader Constant ID */
+    private static final int INVENTORY_LOADER_ID = 0;
+
+    /* Loop control */
+    private int i = 0;
+
+    /* Adapter to the listview */
     InventoryCursorAdapter inventoryCursorAdapter;
 
     @Override
@@ -40,6 +53,7 @@ public class InventoryActivity extends AppCompatActivity
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
         inventoryList.setAdapter(inventoryCursorAdapter);
 
+        /* Fab to make a intent to the editor/update activity */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener( ) {
             @Override
@@ -50,7 +64,7 @@ public class InventoryActivity extends AppCompatActivity
         });
 
         /* Start Loader */
-        getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(INVENTORY_LOADER_ID, null, this);
     }
 
     @Override
@@ -68,17 +82,76 @@ public class InventoryActivity extends AppCompatActivity
         int id = item.getItemId( );
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.insert_dummy_data:
+                insertDummyData();
+                return true;
+            case R.id.delete_all:
+                deleteAllData();
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void insertDummyData() {
+        /* Arrays to put random data on database */
+        String[] items = {"Macbook Pro Retina", "iMac", "Google Pixel XL 2", "Xiaomi Mi A1"};
+        Double[] price = { 1200.0, 1500.0, 500.0, 300.0};
+        int[] quantity = { 50, 55, 215, 10};
+
+        /* Loop must be infinity */
+        if (i == items.length){
+            i = 0;
+        }
+
+        /* Insert a random sample on Database */
+        ContentValues values = new ContentValues();
+        values.put(ITEM_COLUMN, items[i]);
+        values.put(PRICE_COLUMN,  price[i]);
+        values.put(QUANTITY_COLUMN, quantity[i]);
+        i++;
+
+        getContentResolver().insert(CONTENT_URI, values);
+
+        /* Give a feedback to the user */
+        Snackbar.make(findViewById(R.id.coordinator), "New sample added", Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void deleteAllData() {
+        /* Check if user really wants do it */
+        AlertDialog.Builder alertbuilder = new AlertDialog.Builder(this);
+        alertbuilder.setMessage("Do you have sure? Any data will not be recovered.");
+        alertbuilder.setPositiveButton("DELETE", new DialogInterface.OnClickListener( ) {
+            @Override
+            public void onClick( DialogInterface dialog, int which ) {
+                /* Remove all Data */
+                int dataRemoved = getContentResolver().delete(CONTENT_URI, null, null);
+                /* Give some feedback to the user */
+                if (dataRemoved > 0){
+                    Snackbar.make(findViewById(R.id.coordinator), "All data was removed", Snackbar.LENGTH_SHORT).show();
+                } else {
+                    Snackbar.make(findViewById(R.id.coordinator), "Nothing to remove", Snackbar.LENGTH_SHORT).show();
+                }
+            }
+        });
+        alertbuilder.setNegativeButton("CLOSE", new DialogInterface.OnClickListener( ) {
+            @Override
+            public void onClick( DialogInterface dialog, int which ) {
+                if (dialog != null) {
+                    dialog.dismiss( );
+                }
+            }
+        });
+
+        /* Create alert and show */
+        alertbuilder.create().show();
+    }
+
     /*  find data on DB */
     @Override
     public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
-
         String[] projection = {
                 _ID,
                 ITEM_COLUMN,

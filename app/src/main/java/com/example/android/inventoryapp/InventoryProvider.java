@@ -32,7 +32,7 @@ public class InventoryProvider extends ContentProvider {
 
     static {
         URI_MATCHER.addURI(CONTENT_AUTORITY, PATH_INVENTORY, INVENTORY);
-        URI_MATCHER.addURI(CONTENT_AUTORITY, PATH_INVENTORY_ID, INVENTORY_ID);
+        URI_MATCHER.addURI(CONTENT_AUTORITY, PATH_INVENTORY + "/#", INVENTORY_ID);
     }
 
     /* Log anything */
@@ -72,6 +72,8 @@ public class InventoryProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unkown URI " + uri);
         }
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
@@ -138,9 +140,13 @@ public class InventoryProvider extends ContentProvider {
 
     @Override
     public int delete( @NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs ) {
+        /* Get Database */
         SQLiteDatabase db = dbHelper.getWritableDatabase();
+        /* Match the uri */
         int match = URI_MATCHER.match(uri);
+       /* Track the rows removed */
         int rowsRemoved;
+
         switch (match){
             case INVENTORY:
                 rowsRemoved = db.delete(TABLE_NAME, selection, selectionArgs);
@@ -153,6 +159,11 @@ public class InventoryProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Deletion is not supported for the following uri: " + uri);
         }
+
+        if (rowsRemoved != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
         return rowsRemoved;
     }
 

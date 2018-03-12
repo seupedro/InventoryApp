@@ -14,7 +14,7 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 
 public class InventoryDbHelper extends SQLiteOpenHelper {
 
-    public static final int DB_VERSION = 0;
+    public static final int DB_VERSION = 1;
     public static final String DB_NAME = "inventory.db";
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +

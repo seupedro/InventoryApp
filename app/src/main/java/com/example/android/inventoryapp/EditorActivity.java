@@ -47,10 +47,8 @@ public class EditorActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.delete_buton_editor:
-                Toast.makeText(this, "delete", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.save_button_editor:
-                Toast.makeText(this, "Save", Toast.LENGTH_SHORT).show( );
                 saveItem();
                 return true;
         }
@@ -68,6 +66,9 @@ public class EditorActivity extends AppCompatActivity {
         values.put(QUANTITY_COLUMN, quantityEdit.getText().toString().trim());
 
         Uri newUri = getContentResolver().insert(CONTENT_URI, values);
+        getContentResolver().notifyChange(CONTENT_URI, null);
+
         Toast.makeText(this, String.valueOf(newUri), Toast.LENGTH_SHORT).show();
+        finish();
     }
 }
