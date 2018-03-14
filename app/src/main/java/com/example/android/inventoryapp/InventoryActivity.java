@@ -51,7 +51,6 @@ public class InventoryActivity extends AppCompatActivity
 
         /* Find views on layout */
         final ListView inventoryList = findViewById(R.id.list);
-        Button sellButton = findViewById(R.id.sell_button);
 
         /* Set Adapter */
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
@@ -68,13 +67,6 @@ public class InventoryActivity extends AppCompatActivity
             }
         });
 
-        /* Sell by one on Button */
-        sellButton.setOnClickListener(new View.OnClickListener( ) {
-            @Override
-            public void onClick( View v ) {
-                //TODO: Set up Sell Button
-            }
-        });
         /* Fab to make a intent to the editor/update activity */
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener( ) {
@@ -198,5 +190,9 @@ public class InventoryActivity extends AppCompatActivity
     @Override
     public void onLoaderReset( Loader <Cursor> loader ) {
         inventoryCursorAdapter.swapCursor(null);
+    }
+
+    public static void sellQuatity( int quantity ) {
+
     }
 }
