@@ -43,7 +43,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView( View view, final Context context, Cursor cursor ) {
+    public void bindView( View view, final Context context, final Cursor cursor ) {
 
         /* Find views on Layout */
         TextView itemView = view.findViewById(R.id.item_tv);
@@ -85,24 +85,24 @@ public class InventoryCursorAdapter extends CursorAdapter {
                 switch (attempt) {
                     case 1: {
 
-//                        /* Try to update using content resolver */
-//                        int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
-//                        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
-//                        Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
-//
-//                        Log.e(LOG_TAG, "Quantity: " + currentQuantity + " from ID: " + currentId);
-//                        currentQuantity -= 1;
-//                        Log.e(LOG_TAG, "Quantity Updated: " + currentQuantity + " from ID: " + currentId);
-//                        Log.e(LOG_TAG, String.valueOf(currentUri));
-//
-//                        ContentValues values = new ContentValues();
-//                        values.put(QUANTITY_COLUMN, currentQuantity);
-//
-//                        context.getContentResolver().update(currentUri,
-//                                values,
-//                                currentId,
-//                                null);
-//
+                        /* Try to update using content resolver */
+                        int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
+                        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
+                        Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
+
+                        Log.e(LOG_TAG, "Quantity: " + currentQuantity + " from ID: " + currentId);
+                        currentQuantity -= 1;
+                        Log.e(LOG_TAG, "Quantity Updated: " + currentQuantity + " from ID: " + currentId);
+                        Log.e(LOG_TAG, String.valueOf(currentUri));
+
+                        ContentValues values = new ContentValues();
+                        values.put(QUANTITY_COLUMN, currentQuantity);
+
+                        context.getContentResolver().update(currentUri,
+                                values,
+                                currentId,
+                                null);
+
                         break;
                     }case 2: {
 
