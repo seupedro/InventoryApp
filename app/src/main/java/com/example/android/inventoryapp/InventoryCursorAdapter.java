@@ -43,7 +43,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView( View view, final Context context, final Cursor cursor ) {
+    public void bindView( View view, final Context context, Cursor cursor ) {
 
         /* Find views on Layout */
         TextView itemView = view.findViewById(R.id.item_tv);
@@ -64,59 +64,55 @@ public class InventoryCursorAdapter extends CursorAdapter {
                 cursor.getString(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN))
         );
 
+        Log.e(LOG_TAG, "ID: " + cursor.getString(cursor.getColumnIndexOrThrow(_ID)));
+
+        /* Get values from db */
+        final int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
+        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
+        final Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
+
+        /* Set up sell button */
         sellButton.setText("Sold +1");
         sellButton.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick( View v ) {
 
-                int attempt = 1;
-
-                /* Set up sell button */
+                int attempt = 2;
+                /* Switch to try to do this logic.
+                 *
+                 * Case 0 updates db directly.
+                 * Case 1 updates using content resolver */
                 switch (attempt) {
-                    case 0: {
-                    /* Try to update DB directly */
-                        InventoryDbHelper helper = new InventoryDbHelper(context);
-                        SQLiteDatabase db = helper.getWritableDatabase( );
+                    case 1: {
 
-                        int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
-                        int soldQuantity = currentQuantity - 1;
-                        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
-
-                        Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
-                        if (currentQuantity == 0) {
-                            return;
-                        } else {
-                            ContentValues values = new ContentValues( );
-                            values.put(QUANTITY_COLUMN, soldQuantity);
-
-                            db.update(TABLE_NAME,
-                                    values,
-                                    currentId,
-                                    null);
-                        }
-                        context.getContentResolver( ).notifyChange(currentUri, null);
-
+//                        /* Try to update using content resolver */
+//                        int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
+//                        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
+//                        Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
+//
+//                        Log.e(LOG_TAG, "Quantity: " + currentQuantity + " from ID: " + currentId);
+//                        currentQuantity -= 1;
+//                        Log.e(LOG_TAG, "Quantity Updated: " + currentQuantity + " from ID: " + currentId);
+//                        Log.e(LOG_TAG, String.valueOf(currentUri));
+//
+//                        ContentValues values = new ContentValues();
+//                        values.put(QUANTITY_COLUMN, currentQuantity);
+//
+//                        context.getContentResolver().update(currentUri,
+//                                values,
+//                                currentId,
+//                                null);
+//
                         break;
-
-                    } case 1: {
-
-                        /* Try to update using content resolver */
-                        int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
-                        String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
-                        Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
-
-                        Log.e(LOG_TAG, "Quantity: " + currentQuantity + " from ID: " + currentId);
-                        currentQuantity -= 1;
-                        Log.e(LOG_TAG, "Quantity Updated: " + currentQuantity + " from ID: " + currentId);
+                    }case 2: {
 
                         ContentValues values = new ContentValues();
-                        values.put(QUANTITY_COLUMN, currentQuantity);
+                        values.put(QUANTITY_COLUMN, (currentQuantity - 1));
 
                         context.getContentResolver().update(currentUri,
                                 values,
-                                currentId,
+                                null,
                                 null);
-
                         break;
                     }
                 }

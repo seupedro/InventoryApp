@@ -191,8 +191,4 @@ public class InventoryActivity extends AppCompatActivity
     public void onLoaderReset( Loader <Cursor> loader ) {
         inventoryCursorAdapter.swapCursor(null);
     }
-
-    public static void sellQuatity( int quantity ) {
-
-    }
 }
