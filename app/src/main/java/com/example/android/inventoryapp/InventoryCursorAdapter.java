@@ -43,7 +43,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
     }
 
     @Override
-    public void bindView( View view, final Context context, Cursor cursor ) {
+    public void bindView( View view, final Context context, final Cursor cursor ) {
 
         /* Find views on Layout */
         TextView itemView = view.findViewById(R.id.item_tv);
@@ -64,12 +64,12 @@ public class InventoryCursorAdapter extends CursorAdapter {
                 cursor.getString(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN))
         );
 
-        Log.e(LOG_TAG, "ID: " + cursor.getString(cursor.getColumnIndexOrThrow(_ID)));
-
-        /* Get values from db */
+         /* Get values from db */
         final int currentQuantity = cursor.getInt(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN));
         String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
         final Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
+
+        Log.e(LOG_TAG, "ID: " + cursor.getString(cursor.getColumnIndexOrThrow(_ID)));
 
         /* Set up sell button */
         sellButton.setText("Sold +1");
