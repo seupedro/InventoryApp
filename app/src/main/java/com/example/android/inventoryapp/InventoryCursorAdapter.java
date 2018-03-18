@@ -77,14 +77,18 @@ public class InventoryCursorAdapter extends CursorAdapter {
             @Override
             public void onClick( View v ) {
 
+                /* Do not show negative quantities */
+                if (currentQuantity == 0){
+                    return;
+                }
+
+                /* Update DB on Click */
                 ContentValues values = new ContentValues();
                 values.put(QUANTITY_COLUMN, (currentQuantity - 1));
-
                 context.getContentResolver().update(currentUri,
                         values,
                         null,
                         null);
-
             }
         });
     }
