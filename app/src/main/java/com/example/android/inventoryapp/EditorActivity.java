@@ -99,6 +99,35 @@ public class EditorActivity extends AppCompatActivity
         } else {
             setTitle("New Item");
         }
+        getPicture();
+    }
+
+    private void getPicture() {
+
+        final String dialogChoices[] = {"Take a Picture", "Catch from gallery"};
+        /* Picture */
+        pictureView.setOnClickListener(new View.OnClickListener( ) {
+            @Override
+            public void onClick( View v ) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditorActivity.this);
+                alertDialog.setTitle("Add photo ");
+                alertDialog.setSingleChoiceItems(dialogChoices, null, new DialogInterface.OnClickListener( ) {
+                    @Override
+                    public void onClick( DialogInterface dialog, int which ) {
+                        switch (which){
+                            case 0:
+                                Log.d(LOG_TAG, dialogChoices[0]);
+                                break;
+                            case 1:
+                                Log.d(LOG_TAG, dialogChoices[1]);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+            }
+        });
     }
 
     private void callProvider() {
