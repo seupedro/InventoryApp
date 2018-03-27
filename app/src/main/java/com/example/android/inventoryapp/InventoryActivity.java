@@ -15,15 +15,14 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
+
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTACT_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTENT_URI;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.PRICE_COLUMN;
@@ -55,6 +54,7 @@ public class InventoryActivity extends AppCompatActivity
         /* Set Adapter */
         inventoryCursorAdapter = new InventoryCursorAdapter(this, null);
         inventoryList.setAdapter(inventoryCursorAdapter);
+        inventoryList.setEmptyView(findViewById(R.id.empty_view));
 
         /* Set up a listener to edit an Item */
         inventoryList.setOnItemClickListener(new AdapterView.OnItemClickListener( ) {
@@ -123,6 +123,7 @@ public class InventoryActivity extends AppCompatActivity
         values.put(ITEM_COLUMN, items[i]);
         values.put(PRICE_COLUMN,  price[i]);
         values.put(QUANTITY_COLUMN, quantity[i]);
+        values.put(CONTACT_COLUMN, "41231234");
         i++;
 
         getContentResolver().insert(CONTENT_URI, values);
@@ -168,7 +169,8 @@ public class InventoryActivity extends AppCompatActivity
                 _ID,
                 ITEM_COLUMN,
                 PRICE_COLUMN,
-                QUANTITY_COLUMN
+                QUANTITY_COLUMN,
+                CONTACT_COLUMN
         };
 
         return new CursorLoader(this,

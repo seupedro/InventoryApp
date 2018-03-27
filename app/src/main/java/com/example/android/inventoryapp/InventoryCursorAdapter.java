@@ -69,8 +69,6 @@ public class InventoryCursorAdapter extends CursorAdapter {
         String currentId = cursor.getString(cursor.getColumnIndexOrThrow(_ID));
         final Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
 
-        Log.e(LOG_TAG, "ID: " + cursor.getString(cursor.getColumnIndexOrThrow(_ID)));
-
         /* Set up sell button */
         sellButton.setText("Sold +1");
         sellButton.setOnClickListener(new View.OnClickListener( ) {

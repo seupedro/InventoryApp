@@ -118,9 +118,17 @@ public class InventoryProvider extends ContentProvider {
         }
 
         /* Check if quantityEdit is valid */
-        int quanity = values.getAsInteger(QUANTITY_COLUMN);
-        if (quanity < 0 ){
+        int quantity = values.getAsInteger(QUANTITY_COLUMN);
+        if ( quantity < 0 ){
             throw new IllegalArgumentException("Quantity must be valid");
+        }
+
+        /* Check if contactEdit is valid */
+        Integer contact = values.getAsInteger(CONTACT_COLUMN);
+        if (contact != null){
+            if (contact < 0 ){
+                throw new IllegalArgumentException("Contact must be valid. Only numbers are accepted");
+            }
         }
 
         /* Get Database  and Insert data on DB */

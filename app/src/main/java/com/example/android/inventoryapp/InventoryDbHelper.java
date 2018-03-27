@@ -14,14 +14,15 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 
 public class InventoryDbHelper extends SQLiteOpenHelper {
 
-    public static final int DB_VERSION = 1;
+    public static final int DB_VERSION = 2;
     public static final String DB_NAME = "inventory.db";
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     _ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     ITEM_COLUMN + " TEXT NOT NULL, " +
                     PRICE_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
-                    QUANTITY_COLUMN + " INTEGER NOT NULL DEFAULT 0 " + ")";
+                    QUANTITY_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
+                    CONTACT_COLUMN + " INTEGER " + ")";
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
