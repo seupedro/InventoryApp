@@ -14,7 +14,7 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 
 public class InventoryDbHelper extends SQLiteOpenHelper {
 
-    public static final int DB_VERSION = 2;
+    public static final int DB_VERSION = 3;
     public static final String DB_NAME = "inventory.db";
     public static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
@@ -22,7 +22,8 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                     ITEM_COLUMN + " TEXT NOT NULL, " +
                     PRICE_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
                     QUANTITY_COLUMN + " INTEGER NOT NULL DEFAULT 0, " +
-                    CONTACT_COLUMN + " INTEGER " + ")";
+                    CONTACT_COLUMN + " INTEGER, " +
+                    IMAGE_COLUMN + " TEXT " + ")";
     public static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 

@@ -8,25 +8,33 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTACT_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTENT_URI;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.IMAGE_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.PRICE_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.QUANTITY_COLUMN;
@@ -44,13 +52,18 @@ public class EditorActivity extends AppCompatActivity
     /* Current Item */
     private static Uri currentItem = null;
 
+    /* Intent Request Codes */
+    private static final int GALLERY_REQUEST = 1;
+    private static final int CAMERA_REQUEST = 2;
+    public static Uri imageUri = null;
+
     /* Global EditText fields */
     private EditText itemEdit;
     private EditText priceEdit;
     private EditText quantityEdit;
     private EditText contactEdit;
-    private Button contactButton;
-    private ImageView pictureView;
+    private ImageButton contactButton;
+    private ImageView imageItem;
 
     /* Track if changes was made on activity */
     private boolean isChanged = false;
@@ -73,13 +86,14 @@ public class EditorActivity extends AppCompatActivity
         quantityEdit = findViewById(R.id.quantity_editview);
         contactEdit = findViewById(R.id.contact_editview);
         contactButton = findViewById(R.id.contact_button);
-        pictureView = findViewById(R.id.picture_item);
+        imageItem = findViewById(R.id.picture_item);
 
         /* Set Change Listeners on fields */
         itemEdit.setOnTouchListener(touchListener);
         priceEdit.setOnTouchListener(touchListener);
         quantityEdit.setOnTouchListener(touchListener);
         contactEdit.setOnTouchListener(touchListener);
+        imageItem.setOnTouchListener(touchListener);
 
          /* Get URI from intent */
         currentItem = getIntent().getData();
@@ -99,35 +113,108 @@ public class EditorActivity extends AppCompatActivity
         } else {
             setTitle("New Item");
         }
-        getPicture();
+        /* Get Image to Item */
+        getItemImage();
     }
 
-    private void getPicture() {
+    private void getItemImage() {
 
-        final String dialogChoices[] = {"Take a Picture", "Catch from gallery"};
+        final String dialogChoices[] = {"From camera", "From gallery"};
         /* Picture */
-        pictureView.setOnClickListener(new View.OnClickListener( ) {
+        imageItem.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick( View v ) {
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(EditorActivity.this);
                 alertDialog.setTitle("Add photo ");
-                alertDialog.setSingleChoiceItems(dialogChoices, null, new DialogInterface.OnClickListener( ) {
+                alertDialog.setItems(dialogChoices, new DialogInterface.OnClickListener( ) {
                     @Override
                     public void onClick( DialogInterface dialog, int which ) {
-                        switch (which){
-                            case 0:
-                                Log.d(LOG_TAG, dialogChoices[0]);
-                                break;
+                        switch (which) {
                             case 1:
-                                Log.d(LOG_TAG, dialogChoices[1]);
+                                /* Gallery option */
+                                Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                                galleryIntent.setType("image/*");
+                                startActivityForResult(galleryIntent, GALLERY_REQUEST);
+                                break;
+                            case 0:
+                                /* Camera Option */
+                                Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                                if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+                                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                                }
                                 break;
                             default:
                                 break;
                         }
                     }
-                })
+                });
+                alertDialog.create().show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            /* Get a photo from gallery */
+            case GALLERY_REQUEST:
+                /* Check if result is correct */
+                if (resultCode == RESULT_OK){
+                    try {
+                        imageUri = data.getData();
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imageItem.setImageBitmap(bitmap);
+                        imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace( );
+                    }
+                } else {
+                    /* In case of error, give some feedback to user */
+                    Toast.makeText(this, "Houve um problema ao selecionar a foto", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            /* Get a photo from gallery */
+            case CAMERA_REQUEST:
+                if (resultCode == RESULT_OK){
+                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+                    imageItem.setImageBitmap(bitmap);
+
+                    /* Attempts */
+                    // firstTry(data);
+                    // secondTry(data);
+
+                } else {
+                    Toast.makeText(this, "Houve um problema ao selecionar a foto", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void firstTry(Intent data) {
+        imageUri = data.getData();
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            imageItem.setImageBitmap(bitmap);
+            imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace( );
+        }
+    }
+
+    private void secondTry(Intent data){
+        try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
+            imageItem.setImageBitmap(bitmap);
+            imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        } catch (IOException e) {
+            e.printStackTrace( );
+        }
     }
 
     private void callProvider() {
@@ -236,6 +323,7 @@ public class EditorActivity extends AppCompatActivity
             values.put(PRICE_COLUMN, priceEdit.getText().toString().trim());
             values.put(QUANTITY_COLUMN, quantityEdit.getText().toString().trim());
             values.put(CONTACT_COLUMN, contactEdit.getText().toString().trim());
+            values.put(IMAGE_COLUMN, String.valueOf(imageUri));
 
         /* If is a new Item, insert on db. Otherwise update current item */
             if (currentItem == null){
@@ -317,7 +405,8 @@ public class EditorActivity extends AppCompatActivity
                 ITEM_COLUMN,
                 PRICE_COLUMN,
                 QUANTITY_COLUMN,
-                CONTACT_COLUMN
+                CONTACT_COLUMN,
+                IMAGE_COLUMN
         };
 
         return new CursorLoader(this,
@@ -341,6 +430,20 @@ public class EditorActivity extends AppCompatActivity
             priceEdit.setText(cursor.getString(cursor.getColumnIndexOrThrow(PRICE_COLUMN)));
             quantityEdit.setText(cursor.getString(cursor.getColumnIndexOrThrow(QUANTITY_COLUMN)));
             contactEdit.setText(cursor.getString(cursor.getColumnIndexOrThrow(CONTACT_COLUMN)));
+            /* Check if there is an image */
+            String imageStringDb = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_COLUMN));
+            if (imageStringDb != null && !TextUtils.isEmpty(imageStringDb)){
+                /* Fill image from gallery */
+                imageUri = Uri.parse(imageStringDb);
+                try {
+                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                    imageItem.setImageBitmap(bitmap);
+                    imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace( );
+                }
+            }
         }
     }
 
@@ -350,10 +453,7 @@ public class EditorActivity extends AppCompatActivity
         priceEdit.setText("");
         quantityEdit.setText("");
         contactEdit.setText("");
+        imageUri = null;
     }
 
-    public void aasasd( View view ) {
-
-
-    }
 }

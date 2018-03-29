@@ -36,5 +36,6 @@ public final class InventoryContract {
         public static final String PRICE_COLUMN = "priceEdit";
         public static final String QUANTITY_COLUMN = "quantityEdit";
         public static final String CONTACT_COLUMN = "contact";
+        public static final String IMAGE_COLUMN = "image";
     }
 }

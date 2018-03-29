@@ -115,7 +115,7 @@
             android:padding="12dp"
             android:textStyle="bold"
             android:gravity="bottom"
-            android:layout_weight="3"
+            android:layout_weight="3.1"
             android:text="Contato"
             android:layout_width="0dp"
             android:layout_height="match_parent" />
@@ -123,7 +123,7 @@
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="0dp"
-            android:layout_weight="3"
+            android:layout_weight="4.1"
             android:layout_height="wrap_content">
 
             <EditText
@@ -133,20 +133,12 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <Button
+        <ImageButton
+            android:src="@drawable/ic_call"
             android:id="@+id/contact_button"
-            android:text="Ligar"
-            android:layout_width="0dp"
-            android:layout_weight="2"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <Button
-            android:id="@+id/asd"
-            android:onClick="aasasd"
-            android:text="Ligar"
-            android:layout_width="0dp"
-            android:layout_weight="2"
-            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

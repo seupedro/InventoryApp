@@ -74,12 +74,10 @@ public class InventoryCursorAdapter extends CursorAdapter {
         sellButton.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick( View v ) {
-
                 /* Do not show negative quantities */
                 if (currentQuantity == 0){
                     return;
                 }
-
                 /* Update DB on Click */
                 ContentValues values = new ContentValues();
                 values.put(QUANTITY_COLUMN, (currentQuantity - 1));
