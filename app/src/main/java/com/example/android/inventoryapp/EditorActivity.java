@@ -11,12 +11,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -26,9 +27,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -140,7 +144,18 @@ public class EditorActivity extends AppCompatActivity
                                 /* Camera Option */
                                 Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                 if (cameraIntent.resolveActivity(getPackageManager()) != null) {
-                                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                                    File photoFile = null;
+                                    try {
+                                        photoFile = createImageFile();
+                                    } catch (IOException e) {
+                                        e.printStackTrace( );
+                                    }
+                                    /* Do only if file was created */
+                                    if (photoFile != null){
+                                        imageUri = FileProvider.getUriForFile(EditorActivity.this, "com.example.android.inventoryapp", photoFile);
+                                        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                                    }
                                 }
                                 break;
                             default:
@@ -151,6 +166,25 @@ public class EditorActivity extends AppCompatActivity
                 alertDialog.create().show();
             }
         });
+    }
+
+    String mCurrentPhotoPath;
+
+    private File createImageFile() throws IOException{
+
+        /**
+         *  Based on Android Developer site:
+         *  https://developer.android.com/training/camera/photobasics.html
+         * */
+
+        /* Create a name for the image */
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageName, ".jpg", storageDir);
+        /* Save File */
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
     }
 
     @Override
@@ -176,16 +210,12 @@ public class EditorActivity extends AppCompatActivity
                     Toast.makeText(this, "Houve um problema ao selecionar a foto", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            /* Get a photo from gallery */
+            /* Get a photo from camera */
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK){
                     Bitmap bitmap = (Bitmap) data.getExtras().get("data");
                     imageItem.setImageBitmap(bitmap);
-
-                    /* Attempts */
-                    // firstTry(data);
-                    // secondTry(data);
-
+                    galleryAddPic();
                 } else {
                     Toast.makeText(this, "Houve um problema ao selecionar a foto", Toast.LENGTH_SHORT).show();
                 }
@@ -195,26 +225,12 @@ public class EditorActivity extends AppCompatActivity
         }
     }
 
-    private void firstTry(Intent data) {
-        imageUri = data.getData();
-        try {
-            InputStream inputStream = getContentResolver().openInputStream(imageUri);
-            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-            imageItem.setImageBitmap(bitmap);
-            imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace( );
-        }
-    }
-
-    private void secondTry(Intent data){
-        try {
-            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getApplicationContext().getContentResolver(), data.getData());
-            imageItem.setImageBitmap(bitmap);
-            imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        } catch (IOException e) {
-            e.printStackTrace( );
-        }
+    private void galleryAddPic() {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        File f = new File(mCurrentPhotoPath);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        this.sendBroadcast(mediaScanIntent);
     }
 
     private void callProvider() {
