@@ -1,7 +1,6 @@
 package com.example.android.inventoryapp;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
@@ -72,6 +71,7 @@ public class EditorActivity extends AppCompatActivity
     private static final int CAMERA_PEMISSION_REQUEST = 22;
     private static final int READ_PERMISSION_REQUEST = 33;
     private static final int WRITE_PERMISSION_REQUEST = 44;
+    private static final int MUTIPLE_PERMISSION_REQUEST = 234;
 
     /* Global EditText fields */
     private EditText itemEdit;
@@ -111,7 +111,7 @@ public class EditorActivity extends AppCompatActivity
         contactEdit.setOnTouchListener(touchListener);
         imageItem.setOnTouchListener(touchListener);
 
-         /* Get URI from intent */
+        /* Get URI from intent */
         currentItem = getIntent().getData();
 
         /* Do a Call on Button */
@@ -135,8 +135,14 @@ public class EditorActivity extends AppCompatActivity
 
     private void getItemImage() {
 
+        /* Dialog Items */
         final String dialogChoices[] = {"From camera", "From gallery"};
-        /* Picture */
+
+        /* Constants Dialog Options */
+        final int CAMERA_OPTION = 0;
+        final int GALLERY_OPTION = 1;
+
+        /* Add an Image from Camera/Gallery */
         imageItem.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick( View v ) {
@@ -147,7 +153,7 @@ public class EditorActivity extends AppCompatActivity
                     public void onClick( DialogInterface dialog, int which ) {
                         switch (which) {
                             /* Gallery option */
-                            case 1:
+                            case GALLERY_OPTION:
                                 /* Check Read Permission */
                                 if (ContextCompat.checkSelfPermission(EditorActivity.this,
                                         Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
@@ -155,17 +161,19 @@ public class EditorActivity extends AppCompatActivity
                                     Intent galleryIntent = new Intent(Intent.ACTION_PICK);
                                     galleryIntent.setType("image/*");
                                     startActivityForResult(galleryIntent, GALLERY_INTENT_REQUEST);
-                                    break;
                                     /* Ask Permission */
                                 } else {
                                     ActivityCompat.requestPermissions(EditorActivity.this,
                                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_REQUEST);
                                 }
+                                break;
                             /* Camera Option */
-                            case 0:
+                            case CAMERA_OPTION:
                                 /* Check Camera Permission */
                                 if (ContextCompat.checkSelfPermission(EditorActivity.this,
-                                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED){
+                                        Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                                        ContextCompat.checkSelfPermission( EditorActivity.this,
+                                                Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
                                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                     if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                                         File photoFile = null;
@@ -174,7 +182,7 @@ public class EditorActivity extends AppCompatActivity
                                         } catch (IOException e) {
                                             e.printStackTrace( );
                                         }
-                                    /* Do only if file was created */
+                                        /* Do only if file was created */
                                         if (photoFile != null){
                                             imageUri = FileProvider.getUriForFile(EditorActivity.this,
                                                     "com.example.android.inventoryapp", photoFile);
@@ -184,7 +192,8 @@ public class EditorActivity extends AppCompatActivity
                                     }
                                 } else {
                                     ActivityCompat.requestPermissions(EditorActivity.this,
-                                            new String[]{Manifest.permission.CAMERA}, CAMERA_PEMISSION_REQUEST);
+                                            new String[]{Manifest.permission.CAMERA,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,}, MUTIPLE_PERMISSION_REQUEST);
                                 }
                                 break;
                             default:
@@ -198,10 +207,10 @@ public class EditorActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRequestPermissionsResult( int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults ) {
-        switch (requestCode){
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
             case READ_PERMISSION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     /* Do the Intent */
                     Intent galleryIntent = new Intent(Intent.ACTION_PICK);
                     galleryIntent.setType("image/*");
@@ -209,25 +218,30 @@ public class EditorActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(this, "É necessário conceder a permissão de leitura para adicionar uma foto", Toast.LENGTH_SHORT).show();
                 }
-            case CAMERA_PEMISSION_REQUEST:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                break;
+            case MUTIPLE_PERMISSION_REQUEST:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+                        grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                     if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                         File photoFile = null;
                         try {
                             photoFile = createImageFile();
                         } catch (IOException e) {
-                            e.printStackTrace( );
+                            e.printStackTrace();
                         }
                         /* Do only if file was created */
-                        if (photoFile != null){
+                        if (photoFile != null) {
                             imageUri = FileProvider.getUriForFile(EditorActivity.this,
                                     "com.example.android.inventoryapp", photoFile);
                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                             startActivityForResult(cameraIntent, CAMERA_INTENT_REQUEST);
                         }
+                    }
+                } else {
+                    Toast.makeText(this, "É necessário conceder as permissões para adicionar uma foto", Toast.LENGTH_SHORT).show();
                 }
-
+                break;
         }
     }
 
@@ -250,7 +264,6 @@ public class EditorActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
             /* Get a photo from gallery */
             case GALLERY_INTENT_REQUEST:
@@ -401,7 +414,7 @@ public class EditorActivity extends AppCompatActivity
             values.put(CONTACT_COLUMN, contactEdit.getText().toString().trim());
             values.put(IMAGE_COLUMN, String.valueOf(imageUri));
 
-        /* If is a new Item, insert on db. Otherwise update current item */
+            /* If is a new Item, insert on db. Otherwise update current item */
             if (currentItem == null){
                 Uri newUri = getContentResolver().insert(CONTENT_URI, values);
                 Toast.makeText(this, String.valueOf(newUri), Toast.LENGTH_SHORT).show();
@@ -409,9 +422,9 @@ public class EditorActivity extends AppCompatActivity
                 int updatedRow = getContentResolver().update(currentItem, values, null, null);
                 Snackbar.make(findViewById(R.id.rootView), "Rows updated: " + updatedRow, Snackbar.LENGTH_SHORT).show();
             }
-        /* Notify changes */
+            /* Notify changes */
             getContentResolver().notifyChange(CONTENT_URI, null);
-        /* Close activity */
+            /* Close activity */
             finish();
         }
     }
