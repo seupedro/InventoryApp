@@ -36,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="#AEB6BD"  />
+                android:textColor="#a6a6a6"  />
 
             <TextView
                 tools:text="1200"
@@ -45,7 +45,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="#AEB6BD"  />
+                android:textColor="#808080"  />
 
         </LinearLayout>
 
@@ -56,12 +56,12 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:text="Qtd:"
+                android:text="Qtd: "
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="#F44242"  />
+                android:textColor="#a6a6a6"  />
 
             <TextView
                 tools:text="05"
@@ -70,7 +70,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif"
                 android:textAppearance="?android:textAppearanceMedium"
-                android:textColor="#F44242"  />
+                android:textColor="#808080"  />
 
         </LinearLayout>
 
