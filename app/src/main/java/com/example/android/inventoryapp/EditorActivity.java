@@ -305,6 +305,12 @@ public class EditorActivity extends AppCompatActivity
     }
 
     private void addImageToGallery() {
+
+        /**
+         *  Based on Android Developer site:
+         *  https://developer.android.com/training/camera/photobasics.html
+         * */
+
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);
