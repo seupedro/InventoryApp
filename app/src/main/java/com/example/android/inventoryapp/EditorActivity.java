@@ -68,10 +68,8 @@ public class EditorActivity extends AppCompatActivity
     private static final int CAMERA_INTENT_REQUEST = 2;
 
     /* Permission Reques Codes */
-    private static final int CAMERA_PEMISSION_REQUEST = 22;
     private static final int READ_PERMISSION_REQUEST = 33;
-    private static final int WRITE_PERMISSION_REQUEST = 44;
-    private static final int MUTIPLE_PERMISSION_REQUEST = 234;
+    private static final int MUTIPLE_PERMISSION_REQUEST = 99;
 
     /* Global EditText fields */
     private EditText itemEdit;
