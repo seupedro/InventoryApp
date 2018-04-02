@@ -135,7 +135,7 @@ public class EditorActivity extends AppCompatActivity
 
     private void getItemImage() {
 
-        /* Dialog Items */
+        /* Where image comes from */
         final String dialogChoices[] = {"From camera", "From gallery"};
 
         /* Constants Dialog Options */
@@ -174,6 +174,7 @@ public class EditorActivity extends AppCompatActivity
                                         Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
                                         ContextCompat.checkSelfPermission( EditorActivity.this,
                                                 Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+
                                     Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                                     if (cameraIntent.resolveActivity(getPackageManager()) != null) {
                                         File photoFile = null;
@@ -185,7 +186,7 @@ public class EditorActivity extends AppCompatActivity
                                         /* Do only if file was created */
                                         if (photoFile != null){
                                             imageUri = FileProvider.getUriForFile(EditorActivity.this,
-                                                    "com.example.android.inventoryapp", photoFile);
+                                                    "com.example.android.fileprovider", photoFile);
                                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                                             startActivityForResult(cameraIntent, CAMERA_INTENT_REQUEST);
                                         }
@@ -233,7 +234,7 @@ public class EditorActivity extends AppCompatActivity
                         /* Do only if file was created */
                         if (photoFile != null) {
                             imageUri = FileProvider.getUriForFile(EditorActivity.this,
-                                    "com.example.android.inventoryapp", photoFile);
+                                    "com.example.android.fileprovider", photoFile);
                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
                             startActivityForResult(cameraIntent, CAMERA_INTENT_REQUEST);
                         }
@@ -255,7 +256,7 @@ public class EditorActivity extends AppCompatActivity
         /* Create a name for the image */
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(imageName, ".jpg", storageDir);
         /* Save File */
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -286,9 +287,16 @@ public class EditorActivity extends AppCompatActivity
             /* Get a photo from camera */
             case CAMERA_INTENT_REQUEST:
                 if (resultCode == RESULT_OK){
-                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    imageItem.setImageBitmap(bitmap);
-                    galleryAddPic();
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imageItem.setImageBitmap(bitmap);
+                        imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        addImageToGallery();
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
                     Toast.makeText(this, "Houve um problema ao selecionar a foto", Toast.LENGTH_SHORT).show();
                 }
@@ -298,7 +306,7 @@ public class EditorActivity extends AppCompatActivity
         }
     }
 
-    private void galleryAddPic() {
+    private void addImageToGallery() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
         File f = new File(mCurrentPhotoPath);
         Uri contentUri = Uri.fromFile(f);

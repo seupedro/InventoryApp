@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,7 +50,7 @@ public class InventoryCursorAdapter extends CursorAdapter {
         TextView itemView = view.findViewById(R.id.item_tv);
         TextView priceView = view.findViewById(R.id.price_tv);
         TextView quantityView = view.findViewById(R.id.quatity_tv);
-        Button sellButton = view.findViewById(R.id.sell_button);
+        ImageButton sellButton = view.findViewById(R.id.sell_button);
 
         /* Fill data from cursor on each textview */
         itemView.setText(
@@ -70,7 +71,6 @@ public class InventoryCursorAdapter extends CursorAdapter {
         final Uri currentUri = ContentUris.withAppendedId(CONTENT_URI, Long.parseLong(currentId));
 
         /* Set up sell button */
-        sellButton.setText("Sold +1");
         sellButton.setOnClickListener(new View.OnClickListener( ) {
             @Override
             public void onClick( View v ) {

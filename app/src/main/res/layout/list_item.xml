@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <TextView
+        tools:text="Macbook Air"
         android:id="@+id/item_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -14,26 +16,69 @@
         android:textAppearance="?android:textAppearanceMedium"
         android:textColor="#2B3D4D"  />
 
-    <TextView
-        android:id="@+id/price_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textColor="#AEB6BD"  />
-
-    <TextView
-        android:id="@+id/quatity_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif"
-        android:textAppearance="?android:textAppearanceLarge"
-        android:textColor="#F44242"  />
-
-    <Button
+    <ImageButton
         android:id="@+id/sell_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:focusable="false"/>
+        android:focusable="false"
+        android:src="@drawable/ic_sell"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content">
+
+            <TextView
+                tools:text="R$ "
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#AEB6BD"  />
+
+            <TextView
+                tools:text="1200"
+                android:id="@+id/price_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#AEB6BD"  />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content">
+
+            <TextView
+                tools:text="Qtd:"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#F44242"  />
+
+            <TextView
+                tools:text="05"
+                android:id="@+id/quatity_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif"
+                android:textAppearance="?android:textAppearanceMedium"
+                android:textColor="#F44242"  />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>
