@@ -69,6 +69,7 @@ public class EditorActivity extends AppCompatActivity
 
     /* Permission Reques Codes */
     private static final int READ_PERMISSION_REQUEST = 33;
+    private static final int WRITE_PERMISSION_REQUEST = 44;
     private static final int MUTIPLE_PERMISSION_REQUEST = 99;
 
     /* Global EditText fields */
@@ -156,8 +157,9 @@ public class EditorActivity extends AppCompatActivity
                                 if (ContextCompat.checkSelfPermission(EditorActivity.this,
                                         Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
                                     /* Do the Intent */
-                                    Intent galleryIntent = new Intent(Intent.ACTION_PICK);
+                                    Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                                     galleryIntent.setType("image/*");
+                                    galleryIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                                     startActivityForResult(galleryIntent, GALLERY_INTENT_REQUEST);
                                     /* Ask Permission */
                                 } else {
@@ -186,6 +188,8 @@ public class EditorActivity extends AppCompatActivity
                                             imageUri = FileProvider.getUriForFile(EditorActivity.this,
                                                     "com.example.android.fileprovider", photoFile);
                                             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                                            cameraIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                            cameraIntent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
                                             startActivityForResult(cameraIntent, CAMERA_INTENT_REQUEST);
                                         }
                                     }
@@ -534,15 +538,22 @@ public class EditorActivity extends AppCompatActivity
             /* Check if there is an image */
             String imageStringDb = cursor.getString(cursor.getColumnIndexOrThrow(IMAGE_COLUMN));
             if (imageStringDb != null && !TextUtils.isEmpty(imageStringDb)){
-                /* Fill image from gallery */
-                imageUri = Uri.parse(imageStringDb);
-                try {
-                    InputStream inputStream = getContentResolver().openInputStream(imageUri);
-                    Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-                    imageItem.setImageBitmap(bitmap);
-                    imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace( );
+                /* Check permission */
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED){
+                    /* Fill image from gallery */
+                    imageUri = Uri.parse(imageStringDb);
+                    try {
+                        InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                        Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                        imageItem.setImageBitmap(bitmap);
+                        imageItem.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace( );
+                    }
+                } else {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_REQUEST);
                 }
             }
         }
