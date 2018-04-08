@@ -160,6 +160,7 @@ public class EditorActivity extends AppCompatActivity
                                     Intent galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                                     galleryIntent.setType("image/*");
                                     galleryIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                    galleryIntent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                                     startActivityForResult(galleryIntent, GALLERY_INTENT_REQUEST);
                                     /* Ask Permission */
                                 } else {
@@ -499,7 +500,20 @@ public class EditorActivity extends AppCompatActivity
                 contactEdit.setHint("Insira apenas números");
                 return false;
             }
+        } else {
+            Toast.makeText(this, "Fornecedor não pode estar em branco", Toast.LENGTH_SHORT)
+                    .show();
+            return false;
         }
+
+        /* Check if image is not empty */
+        if (imageUri == null && currentItem == null){
+            Toast.makeText(this, "Você precisa adicionar uma imagem", Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+
+        /* If all fields are correct */
         return true;
     }
 
