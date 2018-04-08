@@ -52,9 +52,6 @@ import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.
 public class EditorActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /* Tag to search on logs */
-    private static final String LOG_TAG = EditorActivity.class.getSimpleName();
-
     /* Loader ID */
     private static final int EDITOR_LOADER_ID = 0;
 
@@ -325,7 +322,7 @@ public class EditorActivity extends AppCompatActivity
 
     private void callProvider() {
         String providerNumber = contactEdit.getText().toString().trim();
-        if (providerNumber != null && !providerNumber.isEmpty()) {
+        if (!providerNumber.isEmpty()) {
             Intent intent = new Intent(Intent.ACTION_DIAL);
             intent.setData(Uri.parse("tel:" + providerNumber));
             if (intent.resolveActivity(getPackageManager()) != null) {

@@ -10,7 +10,7 @@ import android.provider.BaseColumns;
 
 public final class InventoryContract {
 
-    public InventoryContract(){}
+    private InventoryContract(){}
 
     /* Provider Constants */
     public static final String CONTENT_AUTORITY = "com.example.android.inventoryapp";

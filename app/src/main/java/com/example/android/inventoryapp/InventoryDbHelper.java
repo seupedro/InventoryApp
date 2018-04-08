@@ -4,9 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.android.inventoryapp.InventoryContract.InventoryEntry;
-
-import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.*;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTACT_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.IMAGE_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.PRICE_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.QUANTITY_COLUMN;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.TABLE_NAME;
+import static com.example.android.inventoryapp.InventoryContract.InventoryEntry._ID;
 
 /**
  * Created by phartmann on 09/03/2018.

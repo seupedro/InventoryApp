@@ -4,24 +4,18 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.CONTENT_URI;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.ITEM_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.PRICE_COLUMN;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.QUANTITY_COLUMN;
-import static com.example.android.inventoryapp.InventoryContract.InventoryEntry.TABLE_NAME;
 import static com.example.android.inventoryapp.InventoryContract.InventoryEntry._ID;
 
 
